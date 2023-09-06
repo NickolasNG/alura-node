@@ -4,7 +4,7 @@ class LivroController {
 
     static listarLivros = async (req, res) => {
         try {
-            const livrosResultado = await livros.find().exec();
+            const livrosResultado = await livros.find().populate('autor').exec();
             res.status(200).json(livrosResultado);
         } catch (error) {
             console.error('Error fetching books', error);
@@ -15,7 +15,7 @@ class LivroController {
     static listarLivrosPorId = async (req, res) => {
         try {
             const id = req.params.id;
-            const livroEncontrado = await livros.findById(id);
+            const livroEncontrado = await livros.findById(id).populate('autor', 'nome').exec()
             res.status(200).send(livroEncontrado);
         } catch (err) {
             res.status(400).send({ message: `Erro ao buscar livro por ID: ${err.message}` });
@@ -44,17 +44,31 @@ class LivroController {
 
     static excluirLivro = async (req, res) => {
         const id = req.params.id;
-        try{
+        try {
             const livroRemovido = await livros.findByIdAndDelete(id);
             if (livroRemovido) {
-                res.status(200).send({message: 'Livro foi retirado do catalogo com sucesso'});
+                res.status(200).send({ message: 'Livro foi retirado do catalogo com sucesso' });
             } else {
-                res.status(404).send({message: 'Livro nao foi encontrado'})
+                res.status(404).send({ message: 'Livro nao foi encontrado' })
             }
         } catch (error) {
-            res.status(500).send({message: error.message});
+            res.status(500).send({ message: error.message });
         }
     }
+
+    static listarLivroPorEditora = async (req, res) => {
+        
+        try {
+            const editora = req.query.editora
+            const editoraAchada = await livros.find({ 'editora': editora }).exec();
+            res.status(200).send(editoraAchada);
+        } catch (err){
+            res.status(500).json({ error: 'Erro ao listar livros por editora' });
+        }
+        
+    }
+
+
 
 }
 export default LivroController

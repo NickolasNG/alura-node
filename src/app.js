@@ -1,10 +1,13 @@
 import express from "express";
 import db from "./config/dbConnect.js";
 import routes from "./routes/index.js";
+import chalk from 'chalk';
 
-db.on("error", console.log.bind(console, 'Algo deu errado, vc errou, mas nao desista!'))
+const error = chalk.bold.red;
+
+db.on("error", console.log.bind(console, chalk.red('Algo deu MUITO errado!')))
 db.once("open", () => {
-    console.log('Conexão feita! agora é só codar :)')
+    console.log(chalk.green('Conexão feita com sucesso'));
 })
 
 const app = express();
